@@ -34,9 +34,18 @@ class NoteViewModel @Inject constructor(
             val now = SimpleDateFormat("dd.MM.yyyy HH:mm:ss").format(Date())
             val newNote = Note(title, content, now)
             _notes.value = currentState.copy(
-                notes = currentNotes.plus(newNote)
+                notes = currentNotes.plus(newNote).sortedByDescending { it.creation }
             )
+        }
+    }
 
+    fun removeNote(note: Note) {
+        val currentState = _notes.value
+        if (currentState != null) {
+            val currentNotes = currentState.notes
+            _notes.value = currentState.copy(
+                notes = currentNotes.minus(note)
+            )
         }
     }
 

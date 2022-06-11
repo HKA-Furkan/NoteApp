@@ -1,16 +1,17 @@
 package com.example.noteapp
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Text
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -19,21 +20,11 @@ import androidx.navigation.compose.rememberNavController
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 
-
-/*val testNotes = mutableMapOf<Int, Note>()
-fun getNotes(): Map<Int, Note> {
-    if (testNotes.isEmpty()) {
-        for (i in 1..100) {
-            testNotes[i] = Note("Titel $i", "Das ist Test $i", "")
-        }
-    }
-    return testNotes
-}*/
 
 @Composable
-fun NavigationGraph (
+fun NavigationGraph(
     viewModel: NoteViewModel,
     navController: NavHostController = rememberNavController(),
     startDestination: String = Route.OverviewRoute.routeTemplate
@@ -48,7 +39,7 @@ fun NavigationGraph (
         startDestination = startDestination
     ) {
         composable(Route.OverviewRoute.routeTemplate) {
-            OverviewScreen(navController, notes)
+            OverviewScreen(navController, viewModel, notes)
         }
 
         composable(Route.DetailsRoute.routeTemplate) { backStackEntry ->
@@ -58,7 +49,7 @@ fun NavigationGraph (
             val noteObject = jsonAdapter.fromJson(noteJson)
 
             if (noteObject != null) {
-                NoteDetailScreen(noteObject)
+                NoteDetailScreen(noteObject, viewModel, navController)
             }
         }
     }
@@ -67,43 +58,86 @@ fun NavigationGraph (
 @Composable
 fun OverviewScreen(
     navController: NavHostController,
+    viewModel: NoteViewModel,
     notes: List<Note>
-    //notes: Map<Int, Note> = getNotes()
 ) {
-    LazyColumn(modifier = Modifier
-        .padding(4.dp)
-        .fillMaxSize()
-    ) {
-        items(notes) { note ->
-            NoteCard(note) {
 
-                val moshi = Moshi.Builder().addLast(KotlinJsonAdapterFactory()).build()
-                val jsonAdapter = moshi.adapter(Note::class.java).lenient()
-                val noteJson = jsonAdapter.toJson(note)
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(text = "Alle Notizen")
+                },
+                backgroundColor = Color.Blue,
+                contentColor = Color.White,
+                elevation = 12.dp
+            )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
 
-                navController.navigate(Route.DetailsRoute.createRoute(noteJson))
+                    val note = Note("", "", "")
+                    val moshi = Moshi.Builder().addLast(KotlinJsonAdapterFactory()).build()
+                    val jsonAdapter = moshi.adapter(Note::class.java).lenient()
+                    val noteJson = jsonAdapter.toJson(note)
+
+                    navController.navigate(Route.DetailsRoute.createRoute(noteJson))
+                }
+            ) {
+                Icon(Icons.Filled.Add, "")
             }
-        }
-    }
+        },
+        content = {
+
+            LazyColumn(
+                modifier = Modifier
+                    .padding(4.dp)
+                    .fillMaxSize()
+            ) {
+                items(notes) { note ->
+                    NoteCard(note, viewModel) {
+
+                        val moshi = Moshi.Builder().addLast(KotlinJsonAdapterFactory()).build()
+                        val jsonAdapter = moshi.adapter(Note::class.java).lenient()
+                        val noteJson = jsonAdapter.toJson(note)
+
+                        navController.navigate(Route.DetailsRoute.createRoute(noteJson))
+                    }
+                }
+            }
+        })
 }
 
 @Composable
-fun NoteCard(note: Note, onClick: () -> Unit) {
-    Button(
-        onClick = onClick,
+fun NoteCard(note: Note, viewModel: NoteViewModel, onClick: () -> Unit) {
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(5.dp),
-        colors = ButtonDefaults.buttonColors(backgroundColor = Color.White)
+            .padding(5.dp)
+            .clickable { onClick() },
     ) {
-        Column(
-            modifier = Modifier.padding(5.dp)
-        ) {
-            Text(note.title)
-            Text(note.creation)
-            Text(note.content, modifier = Modifier.padding(top = 5.dp))
+        Row(modifier = Modifier.padding(15.dp)) {
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(note.title)
+                Text(note.creation)
+                Text(note.content, modifier = Modifier.padding(top = 5.dp))
+            }
+
+            IconButton(onClick = {
+                viewModel.removeNote(note)
+            }, modifier = Modifier.align(CenterVertically)) {
+                Icon(
+                    imageVector = Icons.Filled.Delete,
+                    "",
+                    modifier = Modifier.size(32.dp),
+                    tint = Color.Red
+                )
+            }
+
         }
-        Spacer(modifier = Modifier.weight(1f))
     }
 }
 

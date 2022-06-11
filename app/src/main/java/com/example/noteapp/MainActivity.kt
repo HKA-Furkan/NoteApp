@@ -32,21 +32,23 @@ fun Mainpage(
     viewModel: NoteViewModel = hiltViewModel()
 ) {
 
-    Scaffold(topBar = {
+    /*Scaffold(topBar = {
         TopAppBar(
             title = {
-                Text(text = "Notizen")
+                Text(text = "Alle Notizen")
             },
-            actions = {
+            /*actions = {
                 IconButton(onClick = { viewModel.addNote("test", "content") }) {
                     Icon(Icons.Filled.Menu, contentDescription = "Localized description")
                 }
-            },
+            },*/
             backgroundColor = Color.Blue,
             contentColor = Color.White,
             elevation = 12.dp
         )
-    }, content = {
+    }, content = {*/
+
+
         // A surface container using the 'background' color from the theme
         /*Surface(
             modifier = Modifier.fillMaxSize(),
@@ -54,8 +56,10 @@ fun Mainpage(
         ) {
             Greeting("Android")
         }*/
+
+
         NavigationGraph(viewModel)
-    })
+   /* })*/
 }
 
 @Preview(showBackground = true)
