@@ -2,7 +2,12 @@ package com.example.noteapp
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -12,40 +17,40 @@ class NoteViewModel @Inject constructor(
     private val repository: NoteRepository
 ) : ViewModel() {
 
-    private val _notes: MutableLiveData<NoteState> = MutableLiveData(NoteState(emptyList()))
-    val notes = _notes
+    val notes = MutableLiveData<List<Note>>()
 
     init {
-        loadNotes()
-    }
-
-    private fun loadNotes() {
-        val currentState = _notes.value
-        if (currentState != null) {
-            val result = repository.getNotes()
-            _notes.value = currentState.copy(notes = result)
+        viewModelScope.launch {
+            repository.getNotes().collect {
+                notes.postValue(it)
+            }
         }
     }
+
+    fun getNoteList(): Flow<List<Note>> = repository.getNotes()
+
+    fun getNote(searchQuery: String): Flow<Note> = repository.getNote(searchQuery)
 
     fun addNote(title: String, content: String) {
-        val currentState = _notes.value
-        if (currentState != null) {
-            val currentNotes = currentState.notes
-            val now = SimpleDateFormat("dd.MM.yyyy HH:mm:ss").format(Date())
-            val newNote = Note(title, content, now)
-            _notes.value = currentState.copy(
-                notes = currentNotes.plus(newNote).sortedByDescending { it.creation }
-            )
+        val note = Note(
+            title = title,
+            content = content,
+            creation = SimpleDateFormat("dd.MM.yyyy HH:mm:ss").format(Date())
+        )
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.saveNote(note)
         }
     }
 
-    fun removeNote(note: Note) {
-        val currentState = _notes.value
-        if (currentState != null) {
-            val currentNotes = currentState.notes
-            _notes.value = currentState.copy(
-                notes = currentNotes.minus(note)
-            )
+    fun updateNote(note: Note) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.updateNote(note)
+        }
+    }
+
+    fun deleteNote(note: Note) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.deleteNote(note)
         }
     }
 
