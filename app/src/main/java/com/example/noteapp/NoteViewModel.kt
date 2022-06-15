@@ -17,6 +17,9 @@ class NoteViewModel @Inject constructor(
     private val repository: NoteRepository
 ) : ViewModel() {
 
+    //private val _notes: MutableLiveData<NoteState> = MutableLiveData(NoteState(emptyList()))
+
+    //val notes = _notes
     val notes = MutableLiveData<List<Note>>()
 
     init {

@@ -9,7 +9,6 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 @Entity(tableName = "notes")
-//@JsonClass(generateAdapter = true)
 data class Note(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0L,

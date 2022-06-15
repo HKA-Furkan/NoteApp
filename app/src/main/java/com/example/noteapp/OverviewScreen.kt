@@ -30,16 +30,14 @@ fun NavigationGraph(
     startDestination: String = Route.OverviewRoute.routeTemplate
 ) {
 
-    val noteState by viewModel.notes.observeAsState()
-
-    val notes = noteState?.notes ?: emptyList<Note>()
+    val notes by viewModel.notes.observeAsState()
 
     NavHost(
         navController = navController,
         startDestination = startDestination
     ) {
         composable(Route.OverviewRoute.routeTemplate) {
-            OverviewScreen(navController, viewModel, notes)
+            OverviewScreen(navController, viewModel, notes?: emptyList())
         }
 
         composable(Route.DetailsRoute.routeTemplate) { backStackEntry ->
@@ -77,7 +75,7 @@ fun OverviewScreen(
             FloatingActionButton(
                 onClick = {
 
-                    val note = Note("", "", "")
+                    val note = Note(title = "", content = "", creation = "")
                     val moshi = Moshi.Builder().addLast(KotlinJsonAdapterFactory()).build()
                     val jsonAdapter = moshi.adapter(Note::class.java).lenient()
                     val noteJson = jsonAdapter.toJson(note)
@@ -127,7 +125,7 @@ fun NoteCard(note: Note, viewModel: NoteViewModel, onClick: () -> Unit) {
             }
 
             IconButton(onClick = {
-                viewModel.removeNote(note)
+                viewModel.deleteNote(note)
             }, modifier = Modifier.align(CenterVertically)) {
                 Icon(
                     imageVector = Icons.Filled.Delete,

@@ -53,7 +53,7 @@ fun NoteDetailScreen(note: Note, viewModel: NoteViewModel, navController: NavHos
                     if (isValid(title, content)) {
 
                         if (note.creation.isNotEmpty()) {
-                            viewModel.removeNote(note)
+                            viewModel.deleteNote(note)
                         }
 
                         viewModel.addNote(title, content)
