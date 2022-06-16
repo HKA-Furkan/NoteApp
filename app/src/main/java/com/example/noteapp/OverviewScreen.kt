@@ -138,9 +138,3 @@ fun NoteCard(note: Note, viewModel: NoteViewModel, onClick: () -> Unit) {
         }
     }
 }
-
-/*@Preview(showBackground=true)
-@Composable
-fun OverviewScreenPreview() {
-    NavigationGraph()
-}*/

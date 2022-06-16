@@ -74,7 +74,6 @@ fun NoteDetailScreen(note: Note, viewModel: NoteViewModel, navController: NavHos
                 value = titleState.value,
                 onValueChange = {
                     titleState.value = it
-                    //note.title = titleState.value.text
                 },
                 label = { Text("Überschrift") },
                 singleLine = true,
@@ -88,7 +87,6 @@ fun NoteDetailScreen(note: Note, viewModel: NoteViewModel, navController: NavHos
                 value = contentState.value,
                 onValueChange = {
                     contentState.value = it
-                    //note.content = contentState.value.text
                 },
                 label = { Text("Inhalt") },
                 modifier = Modifier

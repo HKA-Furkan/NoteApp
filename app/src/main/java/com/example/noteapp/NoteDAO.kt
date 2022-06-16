@@ -12,9 +12,6 @@ interface NoteDAO {
     @Query("Select * from notes where id = :input")
     fun getNote(input: String): Flow<Note>
 
-    @Update
-    suspend fun updateNote(note: Note)
-
     @Insert
     suspend fun insertNote(note: Note)
 

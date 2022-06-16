@@ -17,9 +17,6 @@ class NoteViewModel @Inject constructor(
     private val repository: NoteRepository
 ) : ViewModel() {
 
-    //private val _notes: MutableLiveData<NoteState> = MutableLiveData(NoteState(emptyList()))
-
-    //val notes = _notes
     val notes = MutableLiveData<List<Note>>()
 
     init {
@@ -30,10 +27,6 @@ class NoteViewModel @Inject constructor(
         }
     }
 
-    fun getNoteList(): Flow<List<Note>> = repository.getNotes()
-
-    fun getNote(searchQuery: String): Flow<Note> = repository.getNote(searchQuery)
-
     fun addNote(title: String, content: String) {
         val note = Note(
             title = title,
@@ -42,12 +35,6 @@ class NoteViewModel @Inject constructor(
         )
         viewModelScope.launch(Dispatchers.IO) {
             repository.saveNote(note)
-        }
-    }
-
-    fun updateNote(note: Note) {
-        viewModelScope.launch(Dispatchers.IO) {
-            repository.updateNote(note)
         }
     }
 
