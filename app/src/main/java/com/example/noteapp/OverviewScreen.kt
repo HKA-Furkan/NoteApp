@@ -21,6 +21,10 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment.Companion.CenterVertically
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
+import com.example.noteapp.ui.theme.Purple700
 
 
 @Composable
@@ -59,20 +63,21 @@ fun OverviewScreen(
     viewModel: NoteViewModel,
     notes: List<Note>
 ) {
-
     Scaffold(
+        backgroundColor = Color(248,248,255),
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = "Alle Notizen")
+                    Text(text = "Alle Notizen", fontSize = 32.sp)
                 },
-                backgroundColor = Color.Blue,
+                backgroundColor = Purple700,
                 contentColor = Color.White,
                 elevation = 12.dp
             )
         },
         floatingActionButton = {
             FloatingActionButton(
+                backgroundColor = Purple700,
                 onClick = {
 
                     val note = Note(title = "", content = "", creation = "")
@@ -110,17 +115,19 @@ fun OverviewScreen(
 @Composable
 fun NoteCard(note: Note, viewModel: NoteViewModel, onClick: () -> Unit) {
     Card(
+        backgroundColor = Color(253,245,230),
         modifier = Modifier
+            .heightIn(0.dp, 156.dp)
             .fillMaxWidth()
             .padding(5.dp)
-            .clickable { onClick() },
+            .clickable { onClick() }
     ) {
         Row(modifier = Modifier.padding(15.dp)) {
             Column(
                 modifier = Modifier.weight(1f)
             ) {
-                Text(note.title)
-                Text(note.creation)
+                Text(note.title, fontWeight = FontWeight.ExtraBold, fontSize = 24.sp)
+                Text("Letzte Änderung: " + note.creation, fontStyle = FontStyle.Companion.Italic, color = Color(112,128,144))
                 Text(note.content, modifier = Modifier.padding(top = 5.dp))
             }
 
